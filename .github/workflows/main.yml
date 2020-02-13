@@ -11,3 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Run a multi-line script
       run: docker build -t opa-oidc-plugin .
+    - name: Tag latest
+      run: docker tag IMAGE_ID docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
+    - name: Publish
+      run: docker push docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
