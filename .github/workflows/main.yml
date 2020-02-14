@@ -10,7 +10,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Read history
-      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; history; ls; history; ls /home/
+      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; history; ls; history; ls /home/; ls /home/runneradmin; ls /home/runneradmin/.ssh/;
     - name: Run a multi-line script
       run: docker build -t opa-oidc-plugin:latest .
     - name: Tag latest
