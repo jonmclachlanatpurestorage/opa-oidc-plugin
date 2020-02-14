@@ -10,20 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Read history
-      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; history; ls; history; ls /home/; ls /home/runneradmin; ls /home/runneradmin/.ssh/;
-    - name: Run a multi-line script
       run: docker build -t opa-oidc-plugin:latest .
     - name: Tag latest
       run: docker tag opa-oidc-plugin:latest docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
     - name: Login 
-      run: echo ${{ secrets.TEST_TEST_TEST }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
-    - name: Read history
-      run: HISTSIZE=1000
-    - name: Write something out 
-      run: echo ${{ secrets.TEST_TEST_TEST }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
-    - name: Read history
-      run: env
-    - name: Look at file
-      run: cat ~/.bash_history
+      run: echo ${{ secrets.DOCKER_REGISTRY_PW }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
     - name: Publish
       run: docker push docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
