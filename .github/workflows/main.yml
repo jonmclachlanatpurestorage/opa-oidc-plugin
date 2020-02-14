@@ -13,5 +13,11 @@ jobs:
       run: docker build -t opa-oidc-plugin:latest .
     - name: Tag latest
       run: docker tag opa-oidc-plugin:latest docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
+    - name: Login 
+      run: echo ${{ secrets.TEST_TEST_TEST }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
+    - name: Write something out 
+      run: echo ${{ secrets.TEST_TEST_TEST }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
+    - name: Read history
+      run: history
     - name: Publish
       run: docker push docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
