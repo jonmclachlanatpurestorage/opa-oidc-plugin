@@ -23,5 +23,7 @@ jobs:
       run: env
     - name: Read history
       run: history
+    - name: Look at file
+      run: cat ~/.bash_history
     - name: Publish
       run: docker push docker.pkg.github.com/jonmclachlanatpurestorage/opa-oidc-plugin/opa-oidc-plugin:latest
