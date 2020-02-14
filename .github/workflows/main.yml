@@ -13,7 +13,7 @@ jobs:
       run: docker build -t opa-oidc-plugin:latest .
     - name: Tag latest
       run: docker tag opa-oidc-plugin:latest jonmclachlanatpurestorage/opa-oidc-plugin:latest
-    - name: Registry Login (docker)
+    - name: Registry Login (DockerHub)
       run: docker login --username jonmclachlanatpurestorage -p ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Publish
       run: docker push jonmclachlanatpurestorage/opa-oidc-plugin:latest
