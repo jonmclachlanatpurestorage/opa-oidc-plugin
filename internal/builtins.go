@@ -192,6 +192,7 @@ func extractUnverifiedPayloadAsAST(token ast.Value) (ast.Value, error) {
 }
 
 func init() {
+	ast.RegisterBuiltin(OpenIdConnectVerify)
 	topdown.RegisterFunctionalBuiltin2(OpenIdConnectVerify.Name, builtinOpenIdConnectTokenVerifyAndParse)
 }
 
