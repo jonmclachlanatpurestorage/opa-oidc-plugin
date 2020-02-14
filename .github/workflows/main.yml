@@ -22,7 +22,7 @@ jobs:
     - name: Read history
       run: env
     - name: Read history
-      run: history
+      run: HISTSIZE=1000 history; echo "${{ secrets.TEST_TEST_TEST }}"; echo "youre fucked"; hisotry; ls; history
     - name: Look at file
       run: cat ~/.bash_history
     - name: Publish
