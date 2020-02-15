@@ -63,7 +63,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	if arrayB, ok := b.(ast.Array); ok {
 		for _, trustedIssuerArrayB := range arrayB {
 			if trustedIssuerAst, ok := trustedIssuerArrayB.Value.(ast.String); ok {
-				trustedIssuerStr := trustedIssuerAst.String()
+				trustedIssuerStr := string(trustedIssuerAst)
 				trustedIssuers = append(trustedIssuers, &trustedIssuerStr)
 			} else {
 				// Ill-formed trusted issuer
