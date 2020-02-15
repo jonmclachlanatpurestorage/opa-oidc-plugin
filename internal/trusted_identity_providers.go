@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/coreos/go-oidc"
+	"github.com/sirupsen/logrus"
 	jwt "github.com/square/go-jose/v3/jwt"
 	"golang.org/x/net/context"
 	"sync"
@@ -45,6 +46,9 @@ func CreateOrGetVerifier(idp *string) (*oidc.IDTokenVerifier, error) {
 
 	// Create a new issuer verifier, save it, and use it.
 	ctx, _ := context.WithTimeout(context.Background(), globalTrustedIssuerContextTimeout)
+
+	logrus.Debug("trusting the idp: " + *idp)
+
 	provider, err := oidc.NewProvider(ctx, "https://" + *idp)
 	if err != nil {
 		return nil, err
