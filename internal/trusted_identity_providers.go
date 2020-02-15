@@ -7,6 +7,7 @@ import (
 	"github.com/sirupsen/logrus"
 	jwt "github.com/square/go-jose/v3/jwt"
 	"golang.org/x/net/context"
+	"strings"
 	"sync"
 	"time"
 )
@@ -102,6 +103,12 @@ func (idpm *TrustedIdProviderManagerImpl) VerifyToken(token *string) (*oidc.IDTo
 	err = parsed.UnsafeClaimsWithoutVerification(extractedClaims)
 	if err != nil {
 		return nil, err
+	}
+
+	issuer := extractedClaims.Issuer
+
+	if strings.HasPrefix(issuer, "https://") {
+		issuer = issuer[8:]
 	}
 
 	// Find the verifier for the token issuer.
