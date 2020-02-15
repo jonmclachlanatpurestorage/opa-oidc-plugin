@@ -112,9 +112,9 @@ func (idpm *TrustedIdProviderManagerImpl) VerifyToken(token *string) (*oidc.IDTo
 	}
 
 	// Find the verifier for the token issuer.
-	verifier, exists := idpm.trustedVerifiers.Load(extractedClaims.Issuer)
+	verifier, exists := idpm.trustedVerifiers.Load(issuer)
 	if !exists {
-		return nil, errors.New(fmt.Sprintf("%s is not a trusted issuer", extractedClaims.Issuer))
+		return nil, errors.New(fmt.Sprintf("%s is not a trusted issuer", issuer))
 	}
 
 	// Verify the token (signature, expiry, and issuer)
