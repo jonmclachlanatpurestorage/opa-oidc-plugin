@@ -45,7 +45,7 @@ func CreateOrGetVerifier(idp *string) (*oidc.IDTokenVerifier, error) {
 
 	// Create a new issuer verifier, save it, and use it.
 	ctx, _ := context.WithTimeout(context.Background(), globalTrustedIssuerContextTimeout)
-	provider, err := oidc.NewProvider(ctx, *idp)
+	provider, err := oidc.NewProvider(ctx, "https://" + *idp)
 	if err != nil {
 		return nil, err
 	}
