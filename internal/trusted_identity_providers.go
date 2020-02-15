@@ -60,6 +60,7 @@ func CreateOrGetVerifier(idp *string) (*oidc.IDTokenVerifier, error) {
 			SkipClientIDCheck: true, // Today, just trust all clients from the idp
 			SkipExpiryCheck: false,  // Enforce issued at, and, expires at. Your local clock time matters.
 			SkipIssuerCheck: false,  // Enforce iss claim in tokens, too. ONLY FOR TESTING.
+			Now: time.Now,
 		})
 
 	// Save this verifier for latter requests.
@@ -106,7 +107,6 @@ func (idpm *TrustedIdProviderManagerImpl) VerifyToken(token *string) (*oidc.IDTo
 	}
 
 	issuer := extractedClaims.Issuer
-
 	if strings.HasPrefix(issuer, "https://") {
 		issuer = issuer[8:]
 	}
