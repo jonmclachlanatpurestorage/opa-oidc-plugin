@@ -9,6 +9,7 @@ import (
 	"github.com/open-policy-agent/opa/types"
 	"github.com/open-policy-agent/opa/topdown"
 	"github.com/open-policy-agent/opa/util"
+	"github.com/sirupsen/logrus"
 	"strings"
 )
 
@@ -39,6 +40,9 @@ func getString(a ast.Value) (*string, error) {
 
 // Implements full JWT decoding, validation and verification.
 func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Value, err error) {
+
+	logrus.Debug("Processing OpenID Connect Token")
+
 	// io.openid.verify(string, [trusted_idp's])
 	//
 	// If valid is true iff token is valid.
@@ -63,6 +67,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 				trustedIssuers = append(trustedIssuers, &trustedIssuerStr)
 			} else {
 				// Ill-formed trusted issuer
+				logrus.WithField("err", err).Error("Ill-formed trusted issuer")
 				err = fmt.Errorf("parsing error of trusted issuers: %v", trustedIssuerArrayB.Value)
 				return nil, err
 			}
@@ -72,17 +77,24 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	// Load or create oidc verifiers for these trusted issuers
 	IdProviderVerifiers, err := GetTrustedIdentityProviderManager(trustedIssuers)
 	if err != nil {
+		logrus.WithField("err", err).Error("Failed to GetTrustedIdentityProviderManager")
 		return nil, err
 	}
 
 	// Verify the issuer is one of the trusted issuers, else fail.
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
+		logrus.WithField("err", err).Info(" Token Verify Failed")
 		return nil, err
 	}
 
 	// Extract an ast payload from the original token payload.
 	val, err := extractUnverifiedPayloadAsAST(a)
+	if err != nil {
+		logrus.WithField("err", err).Error("extract unverified payload as ast failed")
+		return nil, err
+	}
+
 
 	// Package up return values as ast.
 	ret[0] = ast.BooleanTerm(true)
