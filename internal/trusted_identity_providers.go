@@ -123,6 +123,7 @@ func (idpm *TrustedIdProviderManagerImpl) VerifyToken(token *string) (*oidc.IDTo
 	defer cancel()  // releases resources if slowOperation completes before timeout elapses
 	verifiedToken, err := typedVerifier.Verify(ctx, *token)
 	if err != nil {
+		logrus.Debug("verification of " + *token + " failed")
 		return nil, err
 	}
 
