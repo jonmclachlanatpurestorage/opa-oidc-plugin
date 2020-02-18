@@ -90,6 +90,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	}
 
 	// Verify the issuer is one of the trusted issuers, else fail.
+	logrus.Debug("Verifying the token: " + (*token)[0:3])
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
 		logrus.WithField("err", err).Info(" Token Verify Failed")
@@ -97,6 +98,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	}
 
 	// Extract an ast payload from the original token payload.
+	logrus.Debug("Extracting Payloads")
 	val, err := extractUnverifiedPayloadAsAST(a)
 	if err != nil {
 		logrus.WithField("err", err).Error("extract unverified payload as ast failed")
