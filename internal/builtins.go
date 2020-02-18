@@ -90,7 +90,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	}
 
 	// Verify the issuer is one of the trusted issuers, else fail.
-	logrus.Debug("Verifying the token: " + (*token)[0:3])
+	logrus.Debug("Verifying the token: [redacted]")
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
 		logrus.WithField("err", err).Info(" Token Verify Failed")
