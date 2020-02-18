@@ -55,8 +55,16 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	// Grab the token as a string.
 	var token *string
 	if token, err = getString(a); err != nil {
-		return
+		logrus.WithField("err", err).Error("Ill-formed token string")
+		return nil, err
 	}
+
+	if token == nil {
+		logrus.Debug("Failed to get token")
+		return nil, errors.New("Failed to get token from string")
+	}
+
+	logrus.Debug("Parsing trusted issuers")
 
 	// Parse the trusted issuers.
 	var trustedIssuers []*string
