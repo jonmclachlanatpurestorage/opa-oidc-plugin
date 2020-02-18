@@ -48,7 +48,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	// If valid is true iff token is valid.
 	//
 	// Decoding errors etc are returned as errors.
-	ret := make(ast.Array, 3)
+	ret := make(ast.Array, 2)
 	ret[0] = ast.BooleanTerm(false)    // By default, not verified
 	ret[1] = ast.NewTerm(ast.NewObject()) // The parsed payload
 
@@ -205,7 +205,7 @@ func extractUnverifiedPayloadAsAST(token ast.Value) (ast.Value, error) {
 		return nil, fmt.Errorf("JWT payload had invalid encoding: %v", err)
 	}
 
-	payload, err := extractJSONObject(string(p.(ast.String)));
+	payload, err := extractJSONObject(string(p.(ast.String)))
 	if err != nil {
 		return nil, err
 	}
