@@ -56,15 +56,13 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	var token *string
 	if token, err = getString(a); err != nil {
 		logrus.WithField("err", err).Error("Ill-formed token string")
-		return nil, err
+		return ret, err
 	}
 
 	if token == nil {
 		logrus.Debug("Failed to get token")
-		return nil, errors.New("Failed to get token from string")
+		return ret, errors.New("Failed to get token from string")
 	}
-
-	logrus.Debug("Parsing trusted issuers")
 
 	// Parse the trusted issuers.
 	var trustedIssuers []*string
@@ -76,8 +74,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 			} else {
 				// Ill-formed trusted issuer
 				logrus.WithField("err", err).Error("Ill-formed trusted issuer")
-				err = fmt.Errorf("parsing error of trusted issuers: %v", trustedIssuerArrayB.Value)
-				return nil, err
+				return ret, nil
 			}
 		}
 	}
@@ -86,7 +83,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	IdProviderVerifiers, err := GetTrustedIdentityProviderManager(trustedIssuers)
 	if err != nil {
 		logrus.WithField("err", err).Error("Failed to GetTrustedIdentityProviderManager")
-		return nil, err
+		return ret, err
 	}
 
 	// Verify the issuer is one of the trusted issuers, else fail.
@@ -94,7 +91,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
 		logrus.WithField("err", err).Info(" Token Verify Failed")
-		return nil, err
+		return ret, nil
 	}
 
 	// Extract an ast payload from the original token payload.
@@ -102,7 +99,7 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	val, err := extractUnverifiedPayloadAsAST(a)
 	if err != nil {
 		logrus.WithField("err", err).Error("extract unverified payload as ast failed")
-		return nil, err
+		return ret, err
 	}
 
 
