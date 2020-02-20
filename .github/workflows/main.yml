@@ -1,6 +1,9 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
@@ -15,5 +18,5 @@ jobs:
       run: docker tag opa-oidc-plugin:latest jonmclachlanatpurestorage/opa-oidc-plugin:latest
     - name: Registry Login (DockerHub)
       run: docker login --username jonmclachlanatpurestorage -p ${{ secrets.DOCKERHUB_TOKEN }}
-    - name: Publish
+    - name: Publish latest
       run: docker push jonmclachlanatpurestorage/opa-oidc-plugin:latest
