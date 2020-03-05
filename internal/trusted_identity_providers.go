@@ -46,8 +46,7 @@ func CreateOrGetVerifier(idp *string) (*oidc.IDTokenVerifier, error) {
 	}
 
 	// Create a new issuer verifier, save it, and use it.
-	ctx, _ := context.WithTimeout(context.Background(), globalTrustedIssuerContextTimeout)
-
+	ctx := context.Background()
 	logrus.Debug("trusting the idp: " + *idp)
 
 	provider, err := oidc.NewProvider(ctx, "https://" + *idp)
@@ -119,7 +118,7 @@ func (idpm *TrustedIdProviderManagerImpl) VerifyToken(token *string) (*oidc.IDTo
 
 	// Verify the token (signature, expiry, and issuer)
 	typedVerifier := verifier.(*oidc.IDTokenVerifier)
-	ctx, cancel := context.WithTimeout(context.TODO(), globalTrustedIssuerContextTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), globalTrustedIssuerContextTimeout)
 	defer cancel()  // releases resources if slowOperation completes before timeout elapses
 	verifiedToken, err := typedVerifier.Verify(ctx, *token)
 	if err != nil {
