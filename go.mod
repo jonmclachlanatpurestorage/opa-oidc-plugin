@@ -4,7 +4,7 @@ go 1.13
 
 require (
 	github.com/coreos/go-oidc v2.2.1+incompatible
-	github.com/open-policy-agent/opa v0.17.1
+	github.com/open-policy-agent/opa v0.20.5
 	github.com/pquerna/cachecontrol v0.0.0-20180517163645-1555304b9b35 // indirect
 	github.com/square/go-jose/v3 v3.0.0-20191119004800-96c717272387
 	golang.org/x/net v0.0.0-20190620200207-3b0461eec859

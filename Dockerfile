@@ -13,4 +13,4 @@ ADD internal  /opa-oidc-plugin/internal
 WORKDIR /opa-oidc-plugin/
 RUN go install
 
-CMD opa-oidc-plugin 
+CMD opa-oidc-plugin
