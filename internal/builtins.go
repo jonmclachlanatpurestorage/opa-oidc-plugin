@@ -90,8 +90,10 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	logrus.Debug("Verifying the token: [redacted]")
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
+		ret[0] = ast.BooleanTerm(false)
 		logrus.WithField("err", err).Info(" Token Verify Failed")
-		return ret, nil
+	} else {
+		ret[0] = ast.BooleanTerm(true)
 	}
 
 	// Extract an ast payload from the original token payload.
@@ -104,7 +106,6 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 
 
 	// Package up return values as ast.
-	ret[0] = ast.BooleanTerm(true)
 	ret[1] = ast.NewTerm(val)
 	return ret, nil
 }
