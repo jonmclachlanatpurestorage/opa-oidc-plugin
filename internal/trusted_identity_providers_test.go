@@ -2,12 +2,13 @@ package internal
 
 import (
 	"encoding/json"
-	"github.com/coreos/go-oidc"
 	"io/ioutil"
 	"net/http"
 	"strings"
 	"sync"
 	"testing"
+
+	"github.com/coreos/go-oidc"
 )
 
 func TestGetTrustedIdentityProviderManager(t *testing.T) {
@@ -15,9 +16,9 @@ func TestGetTrustedIdentityProviderManager(t *testing.T) {
 		trustedIdentityProviders []*string
 	}
 
-	googleIdP := "https://accounts.google.com"
-	oktaIdP := "https://login.okta.com"
-	notAnIdP := "https://wadfsfasdfdgweqwefwegwewrtgwetgiwefetgrbrhntunuimuimunifuniufhwerwvfghtujy6uyrfqwef.com"
+	googleIdP := "accounts.google.com"
+	oktaIdP := "login.okta.com"
+	notAnIdP := "wadfsfasdfdgweqwefwegwewrtgwetgiwefetgrbrhntunuimuimunifuniufhwerwvfghtujy6uyrfqwef.com"
 	notSecureIdP := "http://accounts.google.com"
 
 	allIdPs := []string{googleIdP, oktaIdP, notAnIdP, notSecureIdP}
@@ -64,11 +65,11 @@ func TestGetTrustedIdentityProviderManager(t *testing.T) {
 		want    *TrustedIdProviderManagerImpl
 		wantErr bool
 	}{
-		{name: "Verify nil    returns empty", args: args{trustedIdentityProviders: nil},                             want: &TrustedIdProviderManagerImpl{trustedVerifiers: sync.Map{}},       wantErr: false},
-		{name: "Verify 1      returns 1",     args: args{trustedIdentityProviders: []*string{&googleIdP}},           want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyGoogleIdP},    wantErr: false},
-		{name: "Verify new 1  returns 1",     args: args{trustedIdentityProviders: []*string{&oktaIdP}},             want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyOktaIdP},      wantErr: false},
-		{name: "Verify 2      returns 2",     args: args{trustedIdentityProviders: []*string{&oktaIdP, &googleIdP}}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: GoogleAndOktaIdP}, wantErr: false},
-		{name: "Verify 1 fake returns error", args: args{trustedIdentityProviders: []*string{&notAnIdP}},            want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyNotAnIdP},     wantErr: true},
+		{name: "Verify nil    returns empty", args: args{trustedIdentityProviders: nil}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: sync.Map{}}, wantErr: false},
+		{name: "Verify 1      returns 1", args: args{trustedIdentityProviders: []*string{&googleIdP}}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyGoogleIdP}, wantErr: false},
+		{name: "Verify new 1  returns 1", args: args{trustedIdentityProviders: []*string{&oktaIdP}}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyOktaIdP}, wantErr: false},
+		{name: "Verify 2      returns 2", args: args{trustedIdentityProviders: []*string{&oktaIdP, &googleIdP}}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: GoogleAndOktaIdP}, wantErr: false},
+		{name: "Verify 1 fake returns error", args: args{trustedIdentityProviders: []*string{&notAnIdP}}, want: &TrustedIdProviderManagerImpl{trustedVerifiers: OnlyNotAnIdP}, wantErr: true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -92,12 +93,12 @@ func TestGetTrustedIdentityProviderManager(t *testing.T) {
 	}
 }
 
-
 type FetchTestTokenResponse struct {
 	AccessToken string `json:"access_token"`
-	TokenType string `json:"token_type"`
+	TokenType   string `json:"token_type"`
 }
-func fetchLiveTestTokenFromAuth0TestAccount(t *testing.T) (*string, error){
+
+func fetchLiveTestTokenFromAuth0TestAccount(t *testing.T) (*string, error) {
 	url := "https://dev-wa90c9xx.auth0.com/oauth/token"
 	payload := strings.NewReader("{\"client_id\":\"0pGQ4pgCuPoH9dqFZnT7rWLL4dHU2YoS\",\"client_secret\":\"TQTFnCpbavunE5mCvivLwx0ONkphF7zh7dv5ECc_BFRyxCKhSQUIQLfFrHN_og3g\",\"audience\":\"http://opa-test-api-app/api\",\"grant_type\":\"client_credentials\"}")
 	req, err := http.NewRequest("POST", url, payload)
@@ -132,7 +133,7 @@ func Test_trustedIdProviderManager_VerifyToken(t *testing.T) {
 	// Test IdP's and Verifiers
 	//
 
-	googleIdP := "https://accounts.google.com"
+	googleIdP := "accounts.google.com"
 	googleIdPVerifier, err := CreateOrGetVerifier(&googleIdP)
 	if err != nil {
 		t.Errorf("Failed to get idp verifier, %v", err)
@@ -141,8 +142,7 @@ func Test_trustedIdProviderManager_VerifyToken(t *testing.T) {
 	var OnlyGoogleIdP sync.Map
 	OnlyGoogleIdP.Store(googleIdP, googleIdPVerifier)
 
-
-	TestLiveIdP := "https://dev-wa90c9xx.auth0.com/"
+	TestLiveIdP := "dev-wa90c9xx.auth0.com/"
 	TestLiveIdPVerifier, err := CreateOrGetVerifier(&TestLiveIdP)
 	if err != nil {
 		t.Errorf("Failed to get idp verifier, %v", err)
@@ -210,10 +210,10 @@ func Test_trustedIdProviderManager_VerifyToken(t *testing.T) {
 	if err != nil {
 		t.FailNow()
 	}
-	
+
 	expectToken := oidc.IDToken{
-		Issuer:          "https://dev-wa90c9xx.auth0.com/",
-		Audience:        []string{"http://opa-test-api-app/api"},
+		Issuer:   "https://dev-wa90c9xx.auth0.com/",
+		Audience: []string{"http://opa-test-api-app/api"},
 	}
 
 	//

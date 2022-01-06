@@ -4,13 +4,14 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/topdown"
 	"github.com/open-policy-agent/opa/topdown/builtins"
 	"github.com/open-policy-agent/opa/types"
-	"github.com/open-policy-agent/opa/topdown"
 	"github.com/open-policy-agent/opa/util"
 	"github.com/sirupsen/logrus"
-	"strings"
 )
 
 // Verifies an openId connect token and decodes the claims if it is valid.
@@ -48,34 +49,38 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	// If valid is true iff token is valid.
 	//
 	// Decoding errors etc are returned as errors.
-	ret := make(ast.Array, 2)
-	ret[0] = ast.BooleanTerm(false)    // By default, not verified
-	ret[1] = ast.NewTerm(ast.NewObject()) // The parsed payload
-
+	ret0 := ast.BooleanTerm(false)       // By default, not verified
+	ret1 := ast.NewTerm(ast.NewObject()) // The parsed payload
 	// Grab the token as a string.
 	var token *string
 	if token, err = getString(a); err != nil {
 		logrus.WithField("err", err).Error("Ill-formed token string")
-		return ret, err
+		return ast.NewArray(ret0, ret1), err
 	}
 
 	if token == nil {
 		logrus.Debug("Failed to get token")
-		return ret, errors.New("Failed to get token from string")
+		return ast.NewArray(ret0, ret1), errors.New("Failed to get token from string")
 	}
 
 	// Parse the trusted issuers.
 	var trustedIssuers []*string
-	if arrayB, ok := b.(ast.Array); ok {
-		for _, trustedIssuerArrayB := range arrayB {
+
+	if arrayB, ok := b.(*ast.Array); ok {
+		err = arrayB.Iter(func(trustedIssuerArrayB *ast.Term) error {
 			if trustedIssuerAst, ok := trustedIssuerArrayB.Value.(ast.String); ok {
 				trustedIssuerStr := string(trustedIssuerAst)
 				trustedIssuers = append(trustedIssuers, &trustedIssuerStr)
 			} else {
 				// Ill-formed trusted issuer
 				logrus.WithField("err", err).Error("Ill-formed trusted issuer")
-				return ret, nil
+				return fmt.Errorf("ill-formed trusted issuer")
 			}
+			return nil
+		})
+
+		if err != nil {
+			return ast.NewArray(ret0, ret1), nil
 		}
 	}
 
@@ -83,17 +88,17 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	IdProviderVerifiers, err := GetTrustedIdentityProviderManager(trustedIssuers)
 	if err != nil {
 		logrus.WithField("err", err).Error("Failed to GetTrustedIdentityProviderManager")
-		return ret, err
+		return ast.NewArray(ret0, ret1), err
 	}
 
 	// Verify the issuer is one of the trusted issuers, else fail.
 	logrus.Debug("Verifying the token: [redacted]")
 	_, err = IdProviderVerifiers.VerifyToken(token)
 	if err != nil {
-		ret[0] = ast.BooleanTerm(false)
+		ret0 = ast.BooleanTerm(false)
 		logrus.WithField("err", err).Info(" Token Verify Failed")
 	} else {
-		ret[0] = ast.BooleanTerm(true)
+		ret0 = ast.BooleanTerm(true)
 	}
 
 	// Extract an ast payload from the original token payload.
@@ -101,13 +106,12 @@ func builtinOpenIdConnectTokenVerifyAndParse(a ast.Value, b ast.Value) (v ast.Va
 	val, err := extractUnverifiedPayloadAsAST(a)
 	if err != nil {
 		logrus.WithField("err", err).Error("extract unverified payload as ast failed")
-		return ret, err
+		return ast.NewArray(ret0, ret1), err
 	}
 
-
 	// Package up return values as ast.
-	ret[1] = ast.NewTerm(val)
-	return ret, nil
+	ret1 = ast.NewTerm(val)
+	return ast.NewArray(ret0, ret1), nil
 }
 
 func decodeJWTPayload(a ast.Value) (string, error) {
@@ -215,5 +219,3 @@ func init() {
 	ast.RegisterBuiltin(OpenIdConnectVerify)
 	topdown.RegisterFunctionalBuiltin2(OpenIdConnectVerify.Name, builtinOpenIdConnectTokenVerifyAndParse)
 }
-
-

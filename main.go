@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonmclachlanatpurestorage/opa-oidc-plugin/internal"
 	"github.com/open-policy-agent/opa/cmd"
 	"github.com/open-policy-agent/opa/plugins"
 	"github.com/open-policy-agent/opa/runtime"
+	"github.com/purestorage/opa-oidc-plugin/internal"
 	"os"
 )
 
@@ -30,4 +30,3 @@ func main() {
 		os.Exit(1)
 	}
 }
-
